@@ -31,6 +31,8 @@
   .video-sec{background:#fff;border-radius:24px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px}
   .video-sec h2{font-size:20px;margin-bottom:6px}
   .video-sec p{font-size:14px;color:#555;line-height:1.6;margin-bottom:14px}
+  .video-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  .video-item h3{font-size:16px;margin-bottom:6px}
   video.demo{width:100%;border-radius:16px;display:block;background:#000}
   footer{text-align:center;color:#777;font-size:13px;line-height:1.7}
   footer a{color:#3f6b3a}
@@ -47,7 +49,7 @@
   </header>
 
   <div class="stage" id="stage">
-    <video id="stageVideo" muted playsinline preload="metadata" src="assets/goat-animation.mp4"></video>
+    <video id="stageVideo" muted playsinline preload="metadata"></video>
     <img id="goat" class="idle" src="assets/goat-idle.png" alt="Kambing">
   </div>
   <div class="status" id="status">Kambing sedang berdiri di padang.</div>
@@ -64,20 +66,23 @@
   <div class="cards">
     <div class="card"><h3>1. Gambar (Visual)</h3><p>Karakter kambing flat illustration, gaya simple modern clean, dibuat dengan AI Gemini: berdiri, jalan, makan, dan lompat, di atas background padang rumput.</p></div>
     <div class="card"><h3>2. Suara (Audio)</h3><p>Suara embikan kambing (“mbek”). Tekan tombol “Suara: Mbek!” atau klik kambingnya. Sumber suara: domain publik, lihat kredit di bawah.</p></div>
-    <div class="card"><h3>3. Gerak (Animasi)</h3><p>Perilaku khas kambing yang digerakkan dari video AI: berjalan dengan kaki melangkah, menunduk makan rumput, dan melompat. Video lengkapnya ada di bawah.</p></div>
+    <div class="card"><h3>3. Gerak (Animasi)</h3><p>Setiap aksi punya videonya sendiri dari AI Gemini: jalan, makan, dan lompat, masing-masing 10 detik. Di stage, video diputar tanpa suara supaya suara embikan tetap jelas.</p></div>
   </div>
 
   <div class="video-sec">
-    <h2>Animasi AI — Satu Rangkaian Gerak</h2>
-    <p>Urutan di video: kambing berjalan masuk dari kiri, berhenti dan berdiri, menunduk makan rumput, melompat, lalu berjalan keluar ke kanan. Potongan video yang sama dipakai untuk tombol Jalan, Makan, dan Lompat di atas, jadi geraknya tidak kaku.</p>
-    <video class="demo" controls preload="metadata" src="assets/goat-animation.mp4"></video>
+    <h2>Video Animasi — Satu Aksi, Satu Video</h2>
+    <p>Ketiga video di bawah ini adalah aset gerak utamanya. Tombol di stage memutar video yang sama, jadi yang dilihat di stage dan di bawah ini konsisten.</p>
+    <div class="video-grid">
+      <div class="video-item"><h3>Jalan</h3><video class="demo" controls preload="metadata" src="assets/goat-walk-video.mp4"></video></div>
+      <div class="video-item"><h3>Makan Rumput</h3><video class="demo" controls preload="metadata" src="assets/goat-eat-video.mp4"></video></div>
+      <div class="video-item"><h3>Lompat</h3><video class="demo" controls preload="metadata" src="assets/goat-jump-video.mp4"></video></div>
+    </div>
   </div>
 
   <footer>
-    Gambar: dibuat dengan AI Gemini &middot; Background: AI Gemini<br>
+    Gambar dan video: dibuat dengan AI Gemini &middot; Background: AI Gemini<br>
     Suara embikan: “Herd of goats bleating” oleh stephan, domain publik via Wikimedia Commons<br>
-    <a href="https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg">https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg</a><br>
-    Video animasi: dibuat dengan AI
+    <a href="https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg">https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg</a>
   </footer>
 </div>
 
@@ -107,12 +112,14 @@
     statusEl.textContent = text;
   }
 
-  function playSegment(start, end, text) {
+  function playVideo(src, start, end, text) {
     busy = true;
     segEnd = end;
     segText = text;
     goat.style.display = 'none';
     stageVideo.style.display = 'block';
+    stageVideo.muted = true;
+    if (stageVideo.getAttribute('src') !== src) stageVideo.setAttribute('src', src);
     const startPlay = () => {
       stageVideo.currentTime = start;
       stageVideo.play().catch(() => { busy = false; showGoatIdle(text); });
@@ -128,6 +135,9 @@
       showGoatIdle(segText);
     }
   });
+  stageVideo.addEventListener('ended', () => {
+    if (segEnd !== null) { segEnd = null; busy = false; showGoatIdle(segText); }
+  });
 
   function doAction(action) {
     if (action === 'idle') {
@@ -139,14 +149,14 @@
     if (busy) return;
     if (action === 'walk') {
       statusEl.textContent = 'Kambing sedang berjalan menyusuri padang...';
-      playSegment(0, 2.4, 'Kambing sudah sampai, lalu berdiri lagi.');
+      playVideo('assets/goat-walk-video.mp4', 0, 10, 'Kambing sudah sampai, lalu berdiri lagi.');
     } else if (action === 'eat') {
       statusEl.textContent = 'Kambing sedang makan rumput...';
-      playSegment(4.0, 6.4, 'Kambing selesai makan, lalu berdiri lagi.');
+      playVideo('assets/goat-eat-video.mp4', 0, 10, 'Kambing selesai makan, lalu berdiri lagi.');
     } else if (action === 'jump') {
       statusEl.textContent = 'Kambing melompat!';
       playBleat();
-      playSegment(6.4, 7.9, 'Kambing mendarat, lalu berdiri lagi.');
+      playVideo('assets/goat-jump-video.mp4', 2.0, 7.0, 'Kambing mendarat, lalu berdiri lagi.');
     }
   }
   goat.addEventListener('click', () => doAction('jump'));
