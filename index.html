@@ -13,9 +13,23 @@
   header p{color:#6b7280;margin-top:6px}
   .pill{display:inline-block;background:#e4efe3;color:#3f6b3a;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;margin-top:12px}
   .stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:24px;overflow:hidden;background:#dfe9dc url("assets/bg-meadow.jpg") center/cover no-repeat;box-shadow:0 12px 32px rgba(0,0,0,.12)}
-  #goat{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);height:62%;width:auto;cursor:pointer}
-  #goat.idle{animation:bob 2.4s ease-in-out infinite}
-  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+  #rig{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:46%;transition:left 4s ease,transform .3s ease;cursor:pointer}
+  #rig svg{width:100%;height:auto;display:block;overflow:visible}
+  #rig.idle .goat-body{animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  #rig.walking .leg-a{animation:swing .55s ease-in-out infinite alternate}
+  #rig.walking .leg-b{animation:swing .55s ease-in-out infinite alternate-reverse}
+  #rig.walking .goat-body{animation:bobWalk .55s ease-in-out infinite}
+  @keyframes swing{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+  @keyframes bobWalk{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .leg-a,.leg-b{transform-box:fill-box;transform-origin:top center}
+  #rig.eating .head-inner{animation:munch 1s ease-in-out infinite}
+  @keyframes munch{0%,100%{transform:rotate(0deg)}50%{transform:rotate(38deg)}}
+  .head-inner{transform-box:fill-box;transform-origin:left bottom}
+  #rig.jumping{animation:jump .9s ease}
+  @keyframes jump{0%{transform:translateX(-50%) translateY(0)}40%{transform:translateX(-50%) translateY(-90px)}100%{transform:translateX(-50%) translateY(0)}}
+  #grass{position:absolute;right:16%;bottom:7%;width:12%;display:none}
+  #grass svg{width:100%;height:auto;display:block}
   #stageVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
   .status{text-align:center;margin:14px 0 4px;font-size:18px;font-weight:600;min-height:26px}
   .hint{text-align:center;color:#6b7280;font-size:14px;margin-bottom:16px}
@@ -34,7 +48,7 @@
   video.demo{width:100%;border-radius:16px;display:block;background:#000}
   footer{text-align:center;color:#777;font-size:13px;line-height:1.7}
   footer a{color:#3f6b3a}
-  @media(max-width:640px){h1{font-size:26px}.cards{grid-template-columns:1fr}#goat{height:58%}}
+  @media(max-width:640px){h1{font-size:26px}.cards{grid-template-columns:1fr}#rig{width:62%}}
 </style>
 </head>
 <body>
@@ -48,7 +62,31 @@
 
   <div class="stage" id="stage">
     <video id="stageVideo" muted playsinline preload="metadata" src="assets/goat-animation.mp4"></video>
-    <img id="goat" class="idle" src="assets/goat-idle.png" alt="Kambing">
+    <div id="grass"><svg viewBox="0 0 100 60"><path d="M10 60 Q15 20 25 60 M30 60 Q35 10 45 60 M50 60 Q55 25 65 60 M70 60 Q75 15 85 60 M85 60 Q90 30 95 60 Z" fill="#5a8a4a"/></svg></div>
+    <div id="rig" class="idle">
+      <svg viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kambing">
+        <!-- ekor -->
+        <g class="goat-body"><path d="M78 108 Q55 95 48 75 Q70 78 82 92 Q88 102 78 108 Z" fill="#fdf6e9" stroke="#8a6d5a" stroke-width="3"/></g>
+        <!-- kaki belakang (lebih gelap, di belakang badan) -->
+        <g transform="translate(138,185)"><g class="leg leg-b"><path d="M-13 0 L13 0 L11 72 Q11 84 0 84 Q-11 84 -13 72 Z" fill="#e8dcc8" stroke="#8a6d5a" stroke-width="3"/><rect x="-11" y="68" width="22" height="16" rx="7" fill="#c9a689"/></g></g>
+        <g transform="translate(268,185)"><g class="leg leg-b"><path d="M-13 0 L13 0 L11 72 Q11 84 0 84 Q-11 84 -13 72 Z" fill="#e8dcc8" stroke="#8a6d5a" stroke-width="3"/><rect x="-11" y="68" width="22" height="16" rx="7" fill="#c9a689"/></g></g>
+        <!-- badan -->
+        <g class="goat-body"><ellipse cx="205" cy="145" rx="128" ry="68" fill="#fdf6e9" stroke="#8a6d5a" stroke-width="3"/></g>
+        <!-- kaki depan (di depan badan) -->
+        <g transform="translate(168,192)"><g class="leg leg-a"><path d="M-13 0 L13 0 L11 72 Q11 84 0 84 Q-11 84 -13 72 Z" fill="#fdf6e9" stroke="#8a6d5a" stroke-width="3"/><rect x="-11" y="68" width="22" height="16" rx="7" fill="#c9a689"/></g></g>
+        <g transform="translate(298,192)"><g class="leg leg-a"><path d="M-13 0 L13 0 L11 72 Q11 84 0 84 Q-11 84 -13 72 Z" fill="#fdf6e9" stroke="#8a6d5a" stroke-width="3"/><rect x="-11" y="68" width="22" height="16" rx="7" fill="#c9a689"/></g></g>
+        <!-- kepala, pivot di leher kiri bawah -->
+        <g transform="translate(300,72)"><g class="head-inner">
+          <path d="M-8 62 Q-18 30 8 18 Q55 0 92 22 Q118 38 112 68 Q106 92 72 96 Q30 98 -8 62 Z" fill="#fdf6e9" stroke="#8a6d5a" stroke-width="3"/>
+          <path d="M18 18 Q30 -18 58 -22 Q62 -2 48 14 Z" fill="#c9a689" stroke="#8a6d5a" stroke-width="3"/>
+          <path d="M48 8 Q58 -28 88 -30 Q90 -8 74 6 Z" fill="#c9a689" stroke="#8a6d5a" stroke-width="3"/>
+          <ellipse cx="22" cy="38" rx="26" ry="14" fill="#f7c8c8" stroke="#8a6d5a" stroke-width="2" transform="rotate(-18 22 38)"/>
+          <circle cx="78" cy="52" r="7" fill="#222"/>
+          <ellipse cx="104" cy="74" rx="9" ry="6" fill="#f2c4c4"/>
+          <path d="M88 82 Q98 88 108 80" fill="none" stroke="#8a6d5a" stroke-width="3" stroke-linecap="round"/>
+        </g></g>
+      </svg>
+    </div>
   </div>
   <div class="status" id="status">Kambing sedang berdiri di padang.</div>
   <div class="hint">Klik kambing = lompat + mengembik</div>
@@ -62,19 +100,19 @@
   </div>
 
   <div class="cards">
-    <div class="card"><h3>1. Gambar (Visual)</h3><p>Karakter kambing flat illustration, gaya simple modern clean, dibuat dengan AI Gemini: berdiri, jalan, makan, dan lompat, di atas background padang rumput.</p></div>
+    <div class="card"><h3>1. Gambar (Visual)</h3><p>Karakter kambing dibuat sebagai rig: badan + 4 kaki terpisah, seperti pola yang dipakai Nabil dan Alyssa. Aset PNG asli dari AI Gemini tetap ada di repo, di folder assets.</p></div>
     <div class="card"><h3>2. Suara (Audio)</h3><p>Suara embikan kambing (“mbek”). Tekan tombol “Suara: Mbek!” atau klik kambingnya. Sumber suara: domain publik, lihat kredit di bawah.</p></div>
-    <div class="card"><h3>3. Gerak (Animasi)</h3><p>Perilaku khas kambing yang digerakkan dari video AI: berjalan dengan kaki melangkah, menunduk makan rumput, dan melompat. Video lengkapnya ada di bawah.</p></div>
+    <div class="card"><h3>3. Gerak (Animasi)</h3><p>Walk cycle: tiap kaki diputar bergantian di poros pangkalnya dengan pola trot (kaki diagonal sefase), badan naik-turun mengikuti langkah, kepala menunduk saat makan. Video AI lengkapnya ada di bawah.</p></div>
   </div>
 
   <div class="video-sec">
     <h2>Animasi AI — Satu Rangkaian Gerak</h2>
-    <p>Urutan di video: kambing berjalan masuk dari kiri, berhenti dan berdiri, menunduk makan rumput, melompat, lalu berjalan keluar ke kanan. Potongan video yang sama dipakai untuk tombol Jalan, Makan, dan Lompat di atas, jadi geraknya tidak kaku.</p>
+    <p>Urutan di video: kambing berjalan masuk dari kiri, berhenti dan berdiri, menunduk makan rumput, melompat, lalu berjalan keluar ke kanan.</p>
     <video class="demo" controls preload="metadata" src="assets/goat-animation.mp4"></video>
   </div>
 
   <footer>
-    Gambar: dibuat dengan AI Gemini &middot; Background: AI Gemini<br>
+    Gambar: dibuat dengan AI Gemini, rig badan + kaki dibuat untuk halaman ini &middot; Background: AI Gemini<br>
     Suara embikan: “Herd of goats bleating” oleh stephan, domain publik via Wikimedia Commons<br>
     <a href="https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg">https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg</a><br>
     Video animasi: dibuat dengan AI
@@ -83,11 +121,11 @@
 
 <audio id="bleat" preload="auto" src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bc/Herd_of_goats_bleating.ogg/Herd_of_goats_bleating.ogg.mp3"></audio>
 <script>
-  const goat = document.getElementById('goat');
-  const stageVideo = document.getElementById('stageVideo');
+  const rig = document.getElementById('rig');
+  const grass = document.getElementById('grass');
   const statusEl = document.getElementById('status');
   const bleat = document.getElementById('bleat');
-  let busy = false, segEnd = null, segText = '', bleatTimer = null;
+  let busy = false, timer = null, bleatTimer = null;
 
   function playBleat() {
     try {
@@ -97,59 +135,37 @@
       bleatTimer = setTimeout(() => bleat.pause(), 4000);
     } catch (e) {}
   }
-
-  function showGoatIdle(text) {
-    stageVideo.pause();
-    stageVideo.style.display = 'none';
-    goat.style.display = 'block';
-    goat.src = 'assets/goat-idle.png';
-    goat.className = 'idle';
+  function setIdle(text) {
+    rig.className = 'idle';
+    rig.style.left = '50%';
+    grass.style.display = 'none';
     statusEl.textContent = text;
   }
-
-  function playSegment(start, end, text) {
-    busy = true;
-    segEnd = end;
-    segText = text;
-    goat.style.display = 'none';
-    stageVideo.style.display = 'block';
-    const startPlay = () => {
-      stageVideo.currentTime = start;
-      stageVideo.play().catch(() => { busy = false; showGoatIdle(text); });
-    };
-    if (stageVideo.readyState >= 1) startPlay();
-    else stageVideo.addEventListener('loadedmetadata', startPlay, { once: true });
-  }
-
-  stageVideo.addEventListener('timeupdate', () => {
-    if (segEnd !== null && stageVideo.currentTime >= segEnd) {
-      segEnd = null;
-      busy = false;
-      showGoatIdle(segText);
-    }
-  });
-
   function doAction(action) {
-    if (action === 'idle') {
-      segEnd = null;
-      busy = false;
-      showGoatIdle('Kambing sedang berdiri di padang.');
-      return;
-    }
+    if (action === 'idle') { busy = false; clearTimeout(timer); setIdle('Kambing sedang berdiri di padang.'); return; }
     if (busy) return;
+    busy = true;
+    clearTimeout(timer);
     if (action === 'walk') {
+      rig.className = 'walking';
+      grass.style.display = 'none';
       statusEl.textContent = 'Kambing sedang berjalan menyusuri padang...';
-      playSegment(0, 2.4, 'Kambing sudah sampai, lalu berdiri lagi.');
+      requestAnimationFrame(() => { rig.style.left = '72%'; });
+      timer = setTimeout(() => { setIdle('Kambing sudah sampai, lalu berdiri lagi.'); busy = false; }, 4200);
     } else if (action === 'eat') {
+      rig.className = 'eating';
+      grass.style.display = 'block';
       statusEl.textContent = 'Kambing sedang makan rumput...';
-      playSegment(4.0, 6.4, 'Kambing selesai makan, lalu berdiri lagi.');
+      timer = setTimeout(() => { setIdle('Kambing selesai makan, lalu berdiri lagi.'); busy = false; }, 4000);
     } else if (action === 'jump') {
+      rig.className = 'jumping';
+      grass.style.display = 'none';
       statusEl.textContent = 'Kambing melompat!';
       playBleat();
-      playSegment(6.4, 7.9, 'Kambing mendarat, lalu berdiri lagi.');
+      timer = setTimeout(() => { setIdle('Kambing mendarat, lalu berdiri lagi.'); busy = false; }, 1000);
     }
   }
-  goat.addEventListener('click', () => doAction('jump'));
+  rig.addEventListener('click', () => doAction('jump'));
 </script>
 </body>
 </html>
