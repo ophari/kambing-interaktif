@@ -24,13 +24,17 @@
   button:hover{background:#eef4ec}
   button.primary{background:#3f6b3a;color:#fff}
   button.primary:hover{background:#34582f}
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
-  .card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-  .card h3{font-size:16px;margin-bottom:6px}
-  .card p{font-size:14px;color:#555;line-height:1.55}
-  footer{text-align:center;color:#777;font-size:13px;line-height:1.7}
-  footer a{color:#3f6b3a}
-  @media(max-width:640px){h1{font-size:26px}.cards{grid-template-columns:1fr}#goat{height:58%}}
+  .motion{display:flex;justify-content:space-around;align-items:flex-end;gap:8px;margin-top:8px;overflow:hidden;padding:8px 0 0}
+  .motion img{height:150px;width:auto}
+  .motion .m-walk{animation:slide 3.2s ease-in-out infinite alternate}
+  .motion .m-jump{animation:bounce 1.4s ease-in-out infinite}
+  .motion .m-eat{animation:nibble 2.2s ease-in-out infinite}
+  .motion .m-idle{animation:floaty 2.8s ease-in-out infinite}
+  @keyframes slide{from{transform:translateX(-18px)}to{transform:translateX(18px)}}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-34px)}}
+  @keyframes nibble{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-4deg) translateY(4px)}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media(max-width:640px){h1{font-size:26px}#goat{height:58%}.motion img{height:96px}}
 </style>
 </head>
 <body>
@@ -57,17 +61,12 @@
     <button class="primary" onclick="playBleat()">Suara: Mbek!</button>
   </div>
 
-  <div class="cards">
-    <div class="card"><h3>1. Gambar (Visual)</h3><p>Karakter kambing flat illustration, gaya simple modern clean, dibuat dengan AI Gemini: berdiri, jalan, makan, dan lompat, di atas background padang rumput.</p></div>
-    <div class="card"><h3>2. Suara (Audio)</h3><p>Suara embikan kambing (“mbek”). Tekan tombol “Suara: Mbek!” atau klik kambingnya. Sumber suara: domain publik, lihat kredit di bawah.</p></div>
-    <div class="card"><h3>3. Gerak (Animasi)</h3><p>Setiap aksi punya videonya sendiri dari AI Gemini: jalan, makan, dan lompat, masing-masing 10 detik. Di stage, video diputar tanpa suara supaya suara embikan tetap jelas.</p></div>
+  <div class="motion">
+    <img class="m-walk" src="assets/goat-walk.png" alt="">
+    <img class="m-jump" src="assets/goat-jump.png" alt="">
+    <img class="m-eat" src="assets/goat-eat.png" alt="">
+    <img class="m-idle" src="assets/goat-idle.png" alt="">
   </div>
-
-  <footer>
-    Gambar dan video: dibuat dengan AI Gemini &middot; Background: AI Gemini<br>
-    Suara embikan: “Herd of goats bleating” oleh stephan, domain publik via Wikimedia Commons<br>
-    <a href="https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg">https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg</a>
-  </footer>
 </div>
 
 <audio id="bleat" preload="auto" src="https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bc/Herd_of_goats_bleating.ogg/Herd_of_goats_bleating.ogg.mp3"></audio>
